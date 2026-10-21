@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Calculator</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background: #f0f0f0;
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+margin: 0;
+}
+
+.calculator {
+background: #222;
+padding: 20px;
+border-radius: 15px;
+width: 280px;
+}
+
+#display {
+width: 100%;
+height: 60px;
+box-sizing: border-box;
+margin-bottom: 15px;
+font-size: 28px;
+text-align: right;
+padding: 10px;
+border: none;
+border-radius: 8px;
+background: #eee;
+}
+
+.buttons {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 8px;
+}
+
+button {
+height: 55px;
+font-size: 20px;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+background: #444;
+color: white;
+}
+
+button:hover {
+background: #666;
+}
+
+.operator {
+background: #ff9500;
+}
+
+.clear {
+background: #e74c3c;
+}
+
+.equals {
+background: #28a745;
+}
+</style>
+</head>
+<body>
+
+<div class="calculator">
+<input type="text" id="display" value="0" readonly>
+
+<div class="buttons">
+<button class="clear" onclick="clearDisplay()">AC</button>
+<button onclick="deleteLast()">DEL</button>
+<button class="operator" onclick="append('/')">÷</button>
+<button class="operator" onclick="append('*')">×</button>
+
+<button onclick="append('7')">7</button>
+<button onclick="append('8')">8</button>
+<button onclick="append('9')">9</button>
+<button class="operator" onclick="append('-')">−</button>
+
+<button onclick="append('4')">4</button>
+<button onclick="append('5')">5</button>
+<button onclick="append('6')">6</button>
+<button class="operator" onclick="append('+')">+</button>
+
+<button onclick="append('1')">1</button>
+<button onclick="append('2')">2</button>
+<button onclick="append('3')">3</button>
+<button class="equals" onclick="calculate()" style="grid-row: span 2; height: 118px">=</button>
+
+<button onclick="append('0')">0</button>
+<button onclick="append('.')">.</button>
+</div>
+</div>
+
+<script>
+const display = document.getElementById("display");
+let expression = "";
+let justCalculated = false;
+
+function append(value) {
+if (justCalculated) {
+if ("0123456789.".includes(value)) {
+expression = "";
+}
+justCalculated = false;
+}
+
+expression += value;
+display.value = expression || "0";
+}
+
+function clearDisplay() {
+expression = "";
+display.value = "0";
+justCalculated = false;
+}
+
+function deleteLast() {
+expression = expression.slice(0, -1);
+display.value = expression || "0";
+justCalculated = false;
+}
+
+function calculate() {
+try {
+if (!expression ||
+!/^[0-9+\-*/.() ]+$/.test(expression)) {
+throw new Error("Invalid input");
+}
+
+const result = Function(
+'"use strict"; return (' + expression + ')'
+)();
+
+if (!Number.isFinite(result)) {
+throw new Error("Invalid result");
+}
+
+expression = String(
+Number(result.toPrecision(12))
+);
+display.value = expression;
+justCalculated = true;
+} catch {
+display.value = "Error";
+expression = "";
+justCalculated = true;
+}
+}
+</script>
+
+</body>
+</html>
